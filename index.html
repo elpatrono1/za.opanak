@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="za.opanak" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>za.opanak</title>
+  <style>
+    :root{
+      --bg:#070b16;
+      --panel:#0f172a;
+      --panel2:#111c33;
+      --text:#f8fafc;
+      --muted:#94a3b8;
+      --line:#22304b;
+      --accent:#22c55e;
+      --accent2:#38bdf8;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(56,189,248,.12), transparent 30%),
+        radial-gradient(circle at top left, rgba(34,197,94,.10), transparent 35%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      padding-bottom:92px;
+    }
+    button,input,select{font:inherit}
+    .app{max-width:720px;margin:0 auto;padding:18px 16px 0}
+    .topbar{
+      display:flex;justify-content:space-between;align-items:center;
+      gap:12px;margin:4px 0 18px;
+    }
+    .brand h1{font-size:22px;margin:0}
+    .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .pill{
+      background:rgba(34,197,94,.12);color:#86efac;border:1px solid rgba(34,197,94,.25);
+      border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700
+    }
+    .hero{
+      background:linear-gradient(145deg,rgba(17,28,51,.96),rgba(10,17,32,.96));
+      border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow);
+      position:relative;overflow:hidden
+    }
+    .hero:after{
+      content:"";position:absolute;width:180px;height:180px;border-radius:50%;
+      right:-70px;top:-90px;background:rgba(56,189,248,.12);filter:blur(2px)
+    }
+    .hero-label{color:var(--muted);font-size:13px}
+    .hero-value{font-size:36px;font-weight:800;letter-spacing:-1.5px;margin:8px 0 2px}
+    .hero-sub{color:#86efac;font-size:13px;font-weight:700}
+    .progress{height:10px;background:#17233b;border-radius:999px;overflow:hidden;margin-top:18px}
+    .progress span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0}
+    .progress-meta{display:flex;justify-content:space-between;margin-top:8px;color:var(--muted);font-size:12px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+    .card{
+      background:rgba(15,23,42,.94);border:1px solid var(--line);
+      border-radius:var(--radius);padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.16)
+    }
+    .card h3{margin:0;color:var(--muted);font-size:12px;font-weight:700}
+    .card .value{font-size:22px;font-weight:800;margin-top:8px}
+    .card .hint{font-size:12px;color:var(--muted);margin-top:5px}
+    .section{margin-top:22px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .section-head h2{font-size:17px;margin:0}
+    .link-btn{
+      border:none;background:transparent;color:#7dd3fc;font-weight:700;font-size:13px;padding:4px
+    }
+    .quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .action{
+      border:1px solid var(--line);background:linear-gradient(180deg,#101a2f,#0c1425);
+      color:var(--text);border-radius:18px;padding:15px 8px;font-weight:800
+    }
+    .action span{display:block;font-size:22px;margin-bottom:6px}
+    .list{display:flex;flex-direction:column;gap:10px}
+    .item{
+      background:rgba(15,23,42,.95);border:1px solid var(--line);border-radius:18px;
+      padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px
+    }
+    .item-left{display:flex;gap:12px;align-items:center;min-width:0}
+    .icon{
+      width:42px;height:42px;border-radius:14px;display:grid;place-items:center;
+      background:#17233b;font-size:19px;flex:0 0 auto
+    }
+    .item-title{font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .item-sub{color:var(--muted);font-size:12px;margin-top:3px}
+    .amount{font-weight:900;font-size:14px;white-space:nowrap}
+    .plus{color:#86efac}.minus{color:#fca5a5}.invest{color:#7dd3fc}
+    .empty{color:var(--muted);text-align:center;padding:24px 10px;font-size:13px}
+    .nav{
+      position:fixed;left:50%;bottom:10px;transform:translateX(-50%);
+      width:min(680px,calc(100% - 20px));display:grid;grid-template-columns:repeat(5,1fr);
+      background:rgba(10,15,28,.92);border:1px solid var(--line);backdrop-filter:blur(18px);
+      border-radius:22px;padding:8px;z-index:30;box-shadow:var(--shadow)
+    }
+    .nav button{
+      border:none;background:transparent;color:var(--muted);border-radius:16px;padding:8px 4px;font-size:11px;font-weight:800
+    }
+    .nav button span{display:block;font-size:19px;margin-bottom:3px}
+    .nav button.active{background:#17233b;color:var(--text)}
+    .view{display:none}.view.active{display:block}
+    .form-card{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:18px}
+    label{display:block;font-size:12px;color:var(--muted);margin:13px 0 7px;font-weight:700}
+    input,select{
+      width:100%;border:1px solid var(--line);background:#0a1222;color:var(--text);
+      border-radius:14px;padding:13px 14px;outline:none
+    }
+    input:focus,select:focus{border-color:#38bdf8}
+    .primary{
+      width:100%;margin-top:16px;border:none;border-radius:16px;padding:14px;
+      background:linear-gradient(90deg,var(--accent),#16a34a);color:#03140a;font-weight:900
+    }
+    .secondary{
+      width:100%;margin-top:10px;border:1px solid var(--line);border-radius:16px;padding:13px;
+      background:#101a2f;color:var(--text);font-weight:800
+    }
+    .danger-btn{border-color:rgba(239,68,68,.35);color:#fca5a5}
+    .filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+    .chart{
+      height:180px;display:flex;align-items:flex-end;gap:7px;padding:15px 6px 5px;
+      background:linear-gradient(180deg,rgba(56,189,248,.04),transparent);border-radius:18px
+    }
+    .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .bar{width:100%;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#38bdf8,#22c55e);min-height:4px}
+    .bar-label{font-size:10px;color:var(--muted)}
+    .pie-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+    .pie-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px}
+    .donut-wrap{display:flex;align-items:center;gap:16px;margin-top:14px}
+    .donut{width:112px;height:112px;border-radius:50%;position:relative;flex:0 0 auto;background:#1e293b}
+    .donut:after{content:'';position:absolute;inset:22px;border-radius:50%;background:var(--panel);box-shadow:inset 0 0 0 1px var(--line)}
+    .legend{flex:1;min-width:0}.legend-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin:8px 0}
+    .legend-name{display:flex;align-items:center;gap:7px;min-width:0}.dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+    .legend-name span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sub-field.hidden{display:none}
+    .goal-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+    .goal-row strong{font-size:14px}
+    .small{font-size:12px;color:var(--muted)}
+    .toast{
+      position:fixed;left:50%;bottom:95px;transform:translateX(-50%) translateY(20px);
+      background:#f8fafc;color:#0f172a;padding:11px 16px;border-radius:999px;
+      font-size:13px;font-weight:800;opacity:0;pointer-events:none;transition:.25s;z-index:50
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    @media (max-width:520px){.pie-grid{grid-template-columns:1fr}.donut{width:104px;height:104px}}
+    @media (min-width:700px){.app{padding-top:28px}.hero-value{font-size:42px}}
+
+    /* Premium mobile polish */
+    html{scroll-behavior:smooth;background:var(--bg)}
+    body{
+      font-weight:400;
+      letter-spacing:-.01em;
+      padding-bottom:0;
+      background:
+        radial-gradient(900px 520px at 112% -8%,rgba(56,189,248,.18),transparent 58%),
+        radial-gradient(760px 520px at -18% 22%,rgba(34,197,94,.12),transparent 60%),
+        radial-gradient(640px 520px at 75% 88%,rgba(167,139,250,.08),transparent 65%),
+        linear-gradient(155deg,#070b16 0%,#091121 42%,#07101b 100%);
+      background-attachment:fixed;
+    }
+    body:before{
+      content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.25;
+      background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+      background-size:32px 32px;
+      mask-image:linear-gradient(to bottom,black,transparent 90%);
+    }
+    .app{padding-bottom:calc(116px + env(safe-area-inset-bottom))}
+    .brand h1,.section-head h2,.hero-value,.card .value{font-weight:650}
+    .brand h1{letter-spacing:-.035em}
+    .hero-value{font-weight:600;letter-spacing:-.055em}
+    .card h3,.pill,label,.action,.nav button,.primary,.secondary,.amount,.item-title,.link-btn{font-weight:560}
+    .card .value{letter-spacing:-.035em}
+    .hero,.card,.item,.form-card,.pie-card{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+    .hero{background:linear-gradient(145deg,rgba(17,28,51,.88),rgba(9,16,30,.88));box-shadow:0 24px 70px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04)}
+    .card,.item,.pie-card,.form-card{background:linear-gradient(145deg,rgba(15,23,42,.88),rgba(10,18,33,.86));box-shadow:0 12px 34px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.025)}
+    button{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .16s ease,background .2s ease,border-color .2s ease,opacity .2s ease}
+    button:active{transform:scale(.975)}
+    input,select{
+      min-height:50px;font-weight:430;color-scheme:dark;
+      border-color:rgba(148,163,184,.18);background:rgba(7,14,27,.76);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.025);transition:border-color .2s ease,box-shadow .2s ease,background .2s ease;
+    }
+    select{
+      appearance:none;-webkit-appearance:none;
+      background-image:linear-gradient(45deg,transparent 50%,#94a3b8 50%),linear-gradient(135deg,#94a3b8 50%,transparent 50%);
+      background-position:calc(100% - 19px) 22px,calc(100% - 14px) 22px;
+      background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:42px;
+    }
+    input:focus,select:focus{border-color:rgba(56,189,248,.72);background:rgba(8,17,32,.95);box-shadow:0 0 0 4px rgba(56,189,248,.10)}
+    input[type="date"],input[type="month"]{color-scheme:dark}
+    input[type="file"]{padding:10px}
+    input[type="file"]::file-selector-button{border:0;border-radius:10px;padding:8px 11px;margin-right:10px;background:#17233b;color:var(--text);font:inherit;font-weight:560}
+    .action{font-weight:570;background:linear-gradient(180deg,rgba(18,31,55,.96),rgba(10,19,35,.94));box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
+    .primary{font-weight:650;box-shadow:0 10px 26px rgba(34,197,94,.18)}
+    .nav{
+      left:50%;bottom:max(10px,env(safe-area-inset-bottom));
+      width:min(680px,calc(100% - 20px));
+      padding:7px;gap:3px;border-radius:24px;
+      background:rgba(8,14,26,.88);border-color:rgba(148,163,184,.20);
+      box-shadow:0 18px 55px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    .nav button{min-height:58px;padding:7px 3px;font-size:10px;letter-spacing:-.015em}
+    .nav button span{font-size:18px;margin-bottom:4px;font-weight:400}
+    .nav button.active{background:linear-gradient(180deg,rgba(30,45,72,.95),rgba(20,32,53,.94));box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+    .toast{bottom:calc(92px + env(safe-area-inset-bottom));font-weight:560}
+    .insights{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+    .insight-card{background:linear-gradient(145deg,rgba(15,23,42,.88),rgba(10,18,33,.86));border:1px solid var(--line);border-radius:20px;padding:15px;min-width:0}
+    .insight-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.055em;font-weight:560}
+    .insight-value{font-size:21px;line-height:1.15;margin-top:8px;font-weight:620;letter-spacing:-.035em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .insight-note{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.35}
+    .mini-progress{height:6px;background:#17233b;border-radius:999px;overflow:hidden;margin-top:11px}
+    .mini-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:inherit}
+    .month-badge{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:6px 9px;border-radius:999px}
+    @media(max-width:380px){.nav button{font-size:9px}.nav button span{font-size:17px}.app{padding-left:12px;padding-right:12px}.hero-value{font-size:32px}}
+
+    .profile-pill{cursor:pointer;font:inherit}
+    .profile-card{display:flex;align-items:center;gap:14px;background:linear-gradient(145deg,rgba(17,28,51,.92),rgba(9,16,30,.9));border:1px solid var(--line);border-radius:24px;padding:16px;margin-bottom:12px}
+    .avatar{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(145deg,var(--accent2),var(--accent));color:#06121c;font-size:20px;font-weight:700}
+    .profile-name{font-size:18px;font-weight:620;letter-spacing:-.03em;margin-bottom:4px}
+    .switch-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 0;margin:0;border-bottom:1px solid rgba(148,163,184,.12);color:var(--text)}
+    .switch-row span{display:flex;flex-direction:column;gap:4px}.switch-row small{color:var(--muted);font-size:11px;line-height:1.35}.switch-row input{width:46px;min-height:26px;height:26px;accent-color:var(--accent);flex:0 0 auto}
+    .privacy-note{font-size:12px;line-height:1.55;color:var(--muted);margin-top:14px;padding:13px;border-radius:14px;background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.14)}
+    .onboarding{position:fixed;inset:0;z-index:100;background:linear-gradient(155deg,#060a14,#0a1426 55%,#07131d);display:flex;flex-direction:column;overflow:hidden}
+    .onboarding.hidden{display:none}.onboarding-glow{position:absolute;width:420px;height:420px;border-radius:50%;background:rgba(56,189,248,.16);filter:blur(30px);right:-200px;top:-180px}.skip-btn{position:absolute;right:20px;top:max(18px,env(safe-area-inset-top));z-index:2;border:0;background:transparent;color:var(--muted);padding:10px;font-size:13px}
+    .slides{flex:1;display:flex;position:relative}.slide{position:absolute;inset:0;padding:110px 28px 130px;display:flex;flex-direction:column;justify-content:center;opacity:0;transform:translateX(26px);pointer-events:none;transition:.38s ease}.slide.active{opacity:1;transform:translateX(0);pointer-events:auto}.slide-icon{width:72px;height:72px;border-radius:24px;display:grid;place-items:center;font-size:32px;margin-bottom:28px;background:linear-gradient(145deg,rgba(56,189,248,.2),rgba(34,197,94,.14));border:1px solid rgba(125,211,252,.2);box-shadow:0 24px 70px rgba(0,0,0,.25)}.eyebrow{font-size:11px;letter-spacing:.16em;color:#7dd3fc;font-weight:650}.slide h2{font-size:36px;line-height:1.03;letter-spacing:-.055em;margin:12px 0 18px;font-weight:620;max-width:520px}.slide p{font-size:16px;line-height:1.65;color:#a9b7ca;max-width:540px;margin:0}.onboarding-bottom{position:absolute;left:0;right:0;bottom:0;padding:18px 24px calc(22px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:20px;background:linear-gradient(transparent,rgba(6,10,20,.96) 28%)}.dots{display:flex;gap:7px}.dots i{width:7px;height:7px;border-radius:999px;background:#334155;transition:.25s}.dots i.active{width:25px;background:linear-gradient(90deg,var(--accent),var(--accent2))}.next-btn{border:0;border-radius:16px;padding:13px 22px;background:linear-gradient(90deg,var(--accent),#16a34a);color:#03140a;font-weight:650;min-width:100px}
+  
+
+    /* Tematske boje */
+    :root[data-theme="ocean"]{--accent:#22c55e;--accent2:#38bdf8;--bg:#070b16;--panel:#0f172a;--panel2:#111c33;--line:#22304b}
+    :root[data-theme="violet"]{--accent:#a78bfa;--accent2:#f472b6;--bg:#0b0714;--panel:#171126;--panel2:#211735;--line:#39294f}
+    :root[data-theme="amber"]{--accent:#f59e0b;--accent2:#fb7185;--bg:#120b06;--panel:#20150d;--panel2:#2b1b10;--line:#4a301d}
+    :root[data-theme="ice"]{--accent:#2dd4bf;--accent2:#60a5fa;--bg:#061015;--panel:#0b1b22;--panel2:#102731;--line:#1d414c}
+    :root[data-theme="mono"]{--accent:#e2e8f0;--accent2:#94a3b8;--bg:#07090d;--panel:#11151c;--panel2:#171d26;--line:#29313d}
+    :root[data-theme="violet"] body{background:radial-gradient(900px 520px at 112% -8%,rgba(244,114,182,.19),transparent 58%),radial-gradient(760px 520px at -18% 22%,rgba(167,139,250,.16),transparent 60%),linear-gradient(155deg,#0b0714,#140c20 50%,#090712)}
+    :root[data-theme="amber"] body{background:radial-gradient(900px 520px at 112% -8%,rgba(251,113,133,.16),transparent 58%),radial-gradient(760px 520px at -18% 22%,rgba(245,158,11,.17),transparent 60%),linear-gradient(155deg,#120b06,#1a1008 50%,#0d0805)}
+    :root[data-theme="ice"] body{background:radial-gradient(900px 520px at 112% -8%,rgba(96,165,250,.18),transparent 58%),radial-gradient(760px 520px at -18% 22%,rgba(45,212,191,.14),transparent 60%),linear-gradient(155deg,#061015,#0a1820 50%,#061014)}
+    :root[data-theme="mono"] body{background:radial-gradient(900px 520px at 112% -8%,rgba(148,163,184,.12),transparent 58%),linear-gradient(155deg,#07090d,#10141b 50%,#07090d)}
+    .theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:10px}
+    .theme-swatch{border:1px solid var(--line);border-radius:16px;padding:8px 5px;background:rgba(8,14,26,.6);color:var(--muted);font-size:10px;text-align:center}
+    .theme-swatch i{display:block;width:28px;height:28px;border-radius:10px;margin:0 auto 6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+    .theme-swatch.active{border-color:var(--accent2);color:var(--text);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent2) 13%,transparent)}
+    .sw-ocean{background:linear-gradient(135deg,#22c55e,#38bdf8)}.sw-violet{background:linear-gradient(135deg,#a78bfa,#f472b6)}.sw-amber{background:linear-gradient(135deg,#f59e0b,#fb7185)}.sw-ice{background:linear-gradient(135deg,#2dd4bf,#60a5fa)}.sw-mono{background:linear-gradient(135deg,#e2e8f0,#64748b)}
+
+    /* Vlastiti padajući izbornici unutar stranice */
+    select.customized{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important;padding:0!important;min-height:0!important}
+    .custom-select{position:relative;width:100%}
+    .custom-select-button{width:100%;min-height:50px;border:1px solid rgba(148,163,184,.18);background:rgba(7,14,27,.76);color:var(--text);border-radius:14px;padding:13px 42px 13px 14px;text-align:left;font-weight:430;position:relative}
+    .custom-select-button:after{content:"";position:absolute;right:16px;top:50%;width:8px;height:8px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:translateY(-70%) rotate(45deg);transition:.2s}
+    .custom-select.open .custom-select-button{border-color:var(--accent2);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 10%,transparent);border-radius:14px 14px 10px 10px}
+    .custom-select.open .custom-select-button:after{transform:translateY(-25%) rotate(225deg)}
+    .custom-select-options{display:none;margin-top:7px;padding:6px;background:linear-gradient(145deg,rgba(15,23,42,.98),rgba(8,15,29,.98));border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 35px rgba(0,0,0,.28)}
+    .custom-select.open .custom-select-options{display:grid;gap:3px;animation:selectIn .16s ease}
+    .custom-select-option{border:0;background:transparent;color:var(--text);padding:11px 12px;border-radius:10px;text-align:left;font-weight:430}
+    .custom-select-option:hover,.custom-select-option.selected{background:color-mix(in srgb,var(--accent2) 12%,rgba(23,35,59,.8));color:var(--text)}
+    .custom-select-option.selected:after{content:"✓";float:right;color:var(--accent2)}
+    @keyframes selectIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+    @media(max-width:420px){.theme-grid{grid-template-columns:repeat(5,1fr);gap:6px}.theme-swatch{padding:7px 2px;font-size:9px}.theme-swatch i{width:25px;height:25px}}
+
+  </style>
+</head>
+<body>
+<div id="onboarding" class="onboarding hidden" aria-hidden="true">
+  <div class="onboarding-glow"></div>
+  <button class="skip-btn" onclick="finishOnboarding()">Preskoči</button>
+  <div class="slides" id="slides">
+    <article class="slide active"><div class="slide-icon">◎</div><div class="eyebrow">DOBRODOŠAO U</div><h2>za.opanak</h2><p>Otkrij kamo ti novac stvarno odlazi i pretvori svakodnevne navike u jasne dugoročne odluke.</p></article>
+    <article class="slide"><div class="slide-icon">↗</div><div class="eyebrow">VIDI ŠIRU SLIKU</div><h2>Svaki euro ima priču</h2><p>Prati prihode, troškove i ulaganja na jednom mjestu. Bez kompliciranih tablica i bez osjećaja krivnje.</p></article>
+    <article class="slide"><div class="slide-icon">◔</div><div class="eyebrow">PREPOZNAJ NAVIKE</div><h2>Male odluke, veliki rezultat</h2><p>Odvoji planirane od neplaniranih troškova, prati dnevni prosjek i vidi kako današnji tempo izgleda do kraja mjeseca.</p></article>
+    <article class="slide"><div class="slide-icon">◇</div><div class="eyebrow">PRIVATNO I JEDNOSTAVNO</div><h2>Tvoji podaci, tvoja kontrola</h2><p>Podaci su trenutno spremljeni samo na tvom uređaju. Izvezi sigurnosnu kopiju ili mjesečni izvadak kad god poželiš.</p></article>
+  </div>
+  <div class="onboarding-bottom"><div class="dots" id="slideDots"></div><button class="next-btn" id="nextSlideBtn" onclick="nextSlide()">Dalje</button></div>
+</div>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <h1>za.opanak</h1>
+      <p id="monthLabel">Pregled mjeseca</p>
+    </div>
+    <button class="pill profile-pill" onclick="showView('settings')">Profil</button>
+  </div>
+
+  <main>
+    <section id="dashboard" class="view active">
+      <div class="hero">
+        <div class="hero-label">Neto stanje ovog mjeseca</div>
+        <div class="hero-value" id="netBalance">0 €</div>
+        <div class="hero-sub" id="savingRate">Stopa štednje: 0%</div>
+        <div class="progress"><span id="millionProgress"></span></div>
+        <div class="progress-meta"><span>Portfelj</span><span id="portfolioProgressText">0 € / 1.000.000 €</span></div>
+      </div>
+
+      <div class="grid">
+        <div class="card"><h3>PRIHODI</h3><div class="value plus" id="incomeTotal">0 €</div><div class="hint">ovaj mjesec</div></div>
+        <div class="card"><h3>TROŠKOVI</h3><div class="value minus" id="expenseTotal">0 €</div><div class="hint">ovaj mjesec</div></div>
+        <div class="card"><h3>ULAGANJA</h3><div class="value invest" id="investmentTotal">0 €</div><div class="hint">ovaj mjesec</div></div>
+        <div class="card"><h3>PORTFELJ</h3><div class="value" id="portfolioTotal">0 €</div><div class="hint">trenutna vrijednost</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h2>Brzi unos</h2></div>
+        <div class="quick-actions">
+          <button class="action" onclick="openAdd('income')"><span>＋</span>Prihod</button>
+          <button class="action" onclick="openAdd('expense')"><span>−</span>Trošak</button>
+          <button class="action" onclick="openAdd('investment')"><span>↗</span>Ulaganje</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h2>Zadnje stavke</h2><button class="link-btn" onclick="showView('transactions')">Vidi sve</button></div>
+        <div id="recentList" class="list"></div>
+      </div>
+    </section>
+
+    <section id="add" class="view">
+      <div class="section-head"><h2>Dodaj stavku</h2></div>
+      <div class="form-card">
+        <label>Vrsta</label>
+        <select id="type">
+          <option value="income">Prihod</option>
+          <option value="expense">Trošak</option>
+          <option value="investment">Ulaganje</option>
+        </select>
+        <label>Iznos (€)</label>
+        <input id="amount" type="number" inputmode="decimal" min="0" step="0.01" placeholder="npr. 500" />
+        <label>Kategorija</label>
+        <select id="category"></select>
+        <div id="expensePlanField" class="sub-field hidden">
+          <label>Vrsta osobnog troška</label>
+          <select id="expensePlan">
+            <option value="planned">Planirani trošak</option>
+            <option value="unplanned">Neplanirani trošak</option>
+          </select>
+        </div>
+        <label>Opis</label>
+        <input id="note" type="text" placeholder="npr. plaća, manča, VWCE, gorivo..." />
+        <label>Datum</label>
+        <input id="date" type="date" />
+        <button class="primary" onclick="saveTransaction()">Spremi stavku</button>
+      </div>
+    </section>
+
+    <section id="transactions" class="view">
+      <div class="section-head"><h2>Sve transakcije</h2></div>
+      <div class="filters">
+        <select id="filterType" onchange="renderTransactions()">
+          <option value="all">Sve vrste</option>
+          <option value="income">Prihodi</option>
+          <option value="expense">Troškovi</option>
+          <option value="investment">Ulaganja</option>
+        </select>
+        <input id="filterMonth" type="month" onchange="renderTransactions()" />
+      </div>
+      <div id="transactionList" class="list"></div>
+    </section>
+
+    <section id="analytics" class="view">
+      <div class="section-head"><h2>Analitika</h2><span id="analyticsMonth" class="month-badge"></span></div>
+      <div class="card">
+        <h3>ZADNJIH 6 MJESECI • NETO</h3>
+        <div id="chart" class="chart"></div>
+      </div>
+      <div class="insights">
+        <div class="insight-card"><div class="insight-label">Cilj ulaganja</div><div id="goalInsight" class="insight-value">0%</div><div id="goalInsightNote" class="insight-note">mjesečnog cilja</div><div class="mini-progress"><span id="goalInsightBar"></span></div></div>
+        <div class="insight-card"><div class="insight-label">Neplanirani troškovi</div><div id="unplannedInsight" class="insight-value">0%</div><div class="insight-note">udio osobnih troškova</div></div>
+        <div class="insight-card"><div class="insight-label">Dnevni prosjek</div><div id="dailySpendInsight" class="insight-value">0 €</div><div class="insight-note">osobnih troškova do danas</div></div>
+        <div class="insight-card"><div class="insight-label">Procjena mjeseca</div><div id="projectionInsight" class="insight-value">0 €</div><div class="insight-note">troškovi ovim tempom</div></div>
+      </div>
+      <div class="section">
+        <div class="section-head"><h2>Raspodjela novca</h2></div>
+        <div class="pie-grid">
+          <div class="pie-card">
+            <h3>OSOBNI TROŠKOVI VS. ULAGANJA</h3>
+            <div class="donut-wrap"><div id="mainPie" class="donut"></div><div id="mainPieLegend" class="legend"></div></div>
+          </div>
+          <div class="pie-card">
+            <h3>VRSTE ULAGANJA</h3>
+            <div class="donut-wrap"><div id="investmentPie" class="donut"></div><div id="investmentPieLegend" class="legend"></div></div>
+          </div>
+          <div class="pie-card">
+            <h3>PLANIRANI VS. NEPLANIRANI TROŠKOVI</h3>
+            <div class="donut-wrap"><div id="expensePlanPie" class="donut"></div><div id="expensePlanLegend" class="legend"></div></div>
+          </div>
+          <div class="pie-card">
+            <h3>OSOBNI TROŠKOVI PO KATEGORIJI</h3>
+            <div id="expenseBreakdown" style="margin-top:14px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="settings" class="view">
+      <div class="section-head"><h2>Profil i postavke</h2></div>
+      <div class="profile-card">
+        <div class="avatar" id="profileAvatar">A</div>
+        <div><div class="profile-name" id="profileNameDisplay">Tvoj profil</div><div class="small">Podaci su trenutno privatni na ovom uređaju</div></div>
+      </div>
+      <div class="form-card">
+        <label>Ime ili nadimak</label>
+        <input id="profileNameInput" type="text" maxlength="30" placeholder="npr. Ante" />
+        <label>Početak financijskog mjeseca</label>
+        <select id="monthStartInput"><option value="1">1. u mjesecu</option><option value="5">5. u mjesecu</option><option value="10">10. u mjesecu</option><option value="15">15. u mjesecu</option></select>
+
+        <label>Boja aplikacije</label>
+        <div class="theme-grid" id="themeGrid">
+          <button type="button" class="theme-swatch" data-theme-choice="ocean" onclick="setTheme('ocean')"><i class="sw-ocean"></i>Ocean</button>
+          <button type="button" class="theme-swatch" data-theme-choice="violet" onclick="setTheme('violet')"><i class="sw-violet"></i>Violet</button>
+          <button type="button" class="theme-swatch" data-theme-choice="amber" onclick="setTheme('amber')"><i class="sw-amber"></i>Amber</button>
+          <button type="button" class="theme-swatch" data-theme-choice="ice" onclick="setTheme('ice')"><i class="sw-ice"></i>Ice</button>
+          <button type="button" class="theme-swatch" data-theme-choice="mono" onclick="setTheme('mono')"><i class="sw-mono"></i>Mono</button>
+        </div>
+        <label class="switch-row"><span><strong>Pametni savjeti</strong><small>Prikaži upozorenja o navikama i potrošnji</small></span><input id="smartTipsInput" type="checkbox" /></label>
+        <label class="switch-row"><span><strong>Potvrda prije brisanja</strong><small>Sprječava slučajno uklanjanje stavki</small></span><input id="confirmDeleteInput" type="checkbox" /></label>
+        <button class="primary" onclick="saveProfile()">Spremi profil</button>
+      </div>
+      <div class="section">
+        <div class="section-head"><h2>Izvadci i dijeljenje</h2></div>
+        <div class="form-card">
+          <label>Mjesec izvoda</label>
+          <input id="statementMonth" type="month" />
+          <button class="secondary" onclick="exportStatementCSV()">Preuzmi mjesečni izvadak (.csv)</button>
+          <button class="secondary" onclick="shareApp()">Podijeli aplikaciju</button>
+          <div class="privacy-note"><strong>Za sada:</strong> svatko tko otvori poveznicu ima svoj odvojeni, lokalni profil. Za pravu prijavu, sinkronizaciju i članarinu trebat će dodati sigurnu bazu podataka i korisničke račune.</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-head"><h2>Ciljevi i podaci</h2></div>
+        <div class="form-card">
+        <div class="goal-row"><div><strong>Trenutna vrijednost portfelja</strong><div class="small">Ručno ažuriraš kada želiš</div></div></div>
+        <input id="portfolioInput" type="number" min="0" step="0.01" placeholder="0" />
+        <label>Mjesečni cilj ulaganja (€)</label>
+        <input id="monthlyGoalInput" type="number" min="0" step="0.01" placeholder="1000" />
+        <label>Veliki cilj (€)</label>
+        <input id="bigGoalInput" type="number" min="1" step="1" value="1000000" />
+        <button class="primary" onclick="saveSettings()">Spremi ciljeve</button>
+        <button class="secondary" onclick="exportData()">Izvezi sigurnosnu kopiju</button>
+        <label>Uvezi sigurnosnu kopiju</label>
+        <input id="importFile" type="file" accept="application/json" onchange="importData(event)" />
+        <button class="secondary danger-btn" onclick="resetData()">Obriši sve podatke</button>
+      </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<nav class="nav" aria-label="Glavna navigacija">
+  <button class="active" data-view="dashboard" onclick="showView('dashboard',this)"><span>⌂</span>Početna</button>
+  <button data-view="add" onclick="showView('add',this)"><span>＋</span>Unos</button>
+  <button data-view="transactions" onclick="showView('transactions',this)"><span>≡</span>Stavke</button>
+  <button data-view="analytics" onclick="showView('analytics',this)"><span>▥</span>Analitika</button>
+  <button data-view="settings" onclick="showView('settings',this)"><span>◎</span>Profil</button>
+</nav>
+<div id="toast" class="toast"></div>
+
+<script>
+const KEY='moj-financijski-tracker-v1';
+const categoryMap={
+  income:['Plaća','Manča','Bonus','Dodatni posao','Prodaja','Ostalo'],
+  expense:['Stanovanje','Hrana','Gorivo','Auto','Izlasci','Zdravlje','Kupovina','Pretplate','Ostalo'],
+  investment:['VWCE','Drugi ETF','Kripto','Štednja','Posao / projekt','Ostalo']
+};
+let state=loadState();
+
+function defaultState(){
+  return {transactions:[],portfolio:0,monthlyGoal:1000,bigGoal:1000000,profileName:'',monthStart:1,smartTips:true,confirmDelete:true,onboardingDone:false,theme:'ocean'};
+}
+function loadState(){
+  try{return {...defaultState(),...JSON.parse(localStorage.getItem(KEY)||'{}')}}
+  catch(e){return defaultState()}
+}
+function persist(){localStorage.setItem(KEY,JSON.stringify(state))}
+function applyTheme(){document.documentElement.dataset.theme=state.theme||'ocean';document.querySelector('meta[name="theme-color"]').setAttribute('content',getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()||'#070b16');document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('active',b.dataset.themeChoice===(state.theme||'ocean')))}
+function setTheme(theme){state.theme=theme;persist();applyTheme();showToast('Tema je promijenjena')}
+function euro(v){return new Intl.NumberFormat('hr-HR',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(v||0)}
+function todayISO(){return new Date().toISOString().slice(0,10)}
+function monthKey(date){return date.slice(0,7)}
+function currentMonth(){return new Date().toISOString().slice(0,7)}
+function monthName(key){
+  const [y,m]=key.split('-').map(Number);
+  return new Intl.DateTimeFormat('hr-HR',{month:'long',year:'numeric'}).format(new Date(y,m-1,1));
+}
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function buildCustomSelect(select){
+  if(select.dataset.customReady==='1')return;
+  select.dataset.customReady='1';select.classList.add('customized');
+  const wrap=document.createElement('div');wrap.className='custom-select';
+  const button=document.createElement('button');button.type='button';button.className='custom-select-button';
+  const options=document.createElement('div');options.className='custom-select-options';
+  select.parentNode.insertBefore(wrap,select);wrap.appendChild(select);wrap.appendChild(button);wrap.appendChild(options);
+  button.addEventListener('click',()=>{document.querySelectorAll('.custom-select.open').forEach(x=>{if(x!==wrap)x.classList.remove('open')});wrap.classList.toggle('open')});
+  wrap._button=button;wrap._options=options;refreshCustomSelect(select);
+}
+function refreshCustomSelect(select){
+  if(!select||!select.parentElement?.classList.contains('custom-select'))return;
+  const wrap=select.parentElement,button=wrap._button||wrap.querySelector('.custom-select-button'),box=wrap._options||wrap.querySelector('.custom-select-options');
+  const selected=select.options[select.selectedIndex];button.textContent=selected?selected.textContent:'Odaberi';
+  box.innerHTML='';[...select.options].forEach((opt,i)=>{const b=document.createElement('button');b.type='button';b.className='custom-select-option'+(i===select.selectedIndex?' selected':'');b.textContent=opt.textContent;b.addEventListener('click',()=>{select.selectedIndex=i;select.dispatchEvent(new Event('change',{bubbles:true}));wrap.classList.remove('open');refreshCustomSelect(select)});box.appendChild(b)});
+}
+function refreshCustomSelects(){document.querySelectorAll('select').forEach(s=>{buildCustomSelect(s);refreshCustomSelect(s)})}
+document.addEventListener('click',e=>{if(!e.target.closest('.custom-select'))document.querySelectorAll('.custom-select.open').forEach(x=>x.classList.remove('open'))});
+
+function setCategories(){
+  const type=document.getElementById('type').value;
+  document.getElementById('category').innerHTML=categoryMap[type].map(x=>`<option>${x}</option>`).join('');
+  refreshCustomSelect(document.getElementById('category'));
+  refreshCustomSelect(document.getElementById('type'));
+  document.getElementById('expensePlanField').classList.toggle('hidden',type!=='expense');
+  refreshCustomSelect(document.getElementById('expensePlan'));
+}
+document.getElementById('type').addEventListener('change',setCategories);
+
+function openAdd(type){
+  document.getElementById('type').value=type;setCategories();
+  showView('add');
+  setTimeout(()=>document.getElementById('amount').focus(),100);
+}
+function showView(id,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+  if(id==='dashboard')renderDashboard();
+  if(id==='transactions')renderTransactions();
+  if(id==='analytics')renderAnalytics();
+  if(id==='settings')renderSettings();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function saveTransaction(){
+  const type=document.getElementById('type').value;
+  const amount=parseFloat(document.getElementById('amount').value);
+  const category=document.getElementById('category').value;
+  const note=document.getElementById('note').value.trim();
+  const date=document.getElementById('date').value||todayISO();
+  const expensePlan=type==='expense'?document.getElementById('expensePlan').value:null;
+  if(!amount||amount<=0){showToast('Upiši ispravan iznos');return}
+  state.transactions.unshift({id:Date.now(),type,amount,category,note,date,expensePlan});
+  persist();
+  document.getElementById('amount').value='';
+  document.getElementById('note').value='';
+  showToast('Stavka spremljena');
+  showView('dashboard');
+}
+function totalsFor(month){
+  const rows=state.transactions.filter(t=>monthKey(t.date)===month);
+  const sum=type=>rows.filter(t=>t.type===type).reduce((a,b)=>a+b.amount,0);
+  return {income:sum('income'),expense:sum('expense'),investment:sum('investment')};
+}
+function renderDashboard(){
+  const m=currentMonth(), t=totalsFor(m);
+  document.getElementById('monthLabel').textContent=monthName(m);
+  document.getElementById('incomeTotal').textContent=euro(t.income);
+  document.getElementById('expenseTotal').textContent=euro(t.expense);
+  document.getElementById('investmentTotal').textContent=euro(t.investment);
+  document.getElementById('portfolioTotal').textContent=euro(state.portfolio);
+  const net=t.income-t.expense-t.investment;
+  document.getElementById('netBalance').textContent=euro(net);
+  document.getElementById('netBalance').style.color=net<0?'#fca5a5':'#f8fafc';
+  const rate=t.income?Math.max(0,(t.investment/t.income)*100):0;
+  document.getElementById('savingRate').textContent=`Uloženo od prihoda: ${rate.toFixed(0)}%`;
+  const pct=Math.min(100,(state.portfolio/state.bigGoal)*100);
+  document.getElementById('millionProgress').style.width=pct+'%';
+  document.getElementById('portfolioProgressText').textContent=`${euro(state.portfolio)} / ${euro(state.bigGoal)}`;
+  renderRecent();
+}
+function iconFor(t){
+  if(t.type==='income')return '💶';
+  if(t.type==='expense')return '🧾';
+  return '📈';
+}
+function typeClass(t){return t.type==='income'?'plus':t.type==='expense'?'minus':'invest'}
+function signedAmount(t){return `${t.type==='income'?'+':'−'}${euro(t.amount)}`}
+function itemHTML(t,withDelete=false){
+  return `<div class="item">
+    <div class="item-left"><div class="icon">${iconFor(t)}</div>
+      <div><div class="item-title">${escapeHtml(t.note||t.category)}</div>
+      <div class="item-sub">${t.category}${t.type==='expense'?' • '+(t.expensePlan==='planned'?'Planirani':'Neplanirani'):''} • ${new Intl.DateTimeFormat('hr-HR').format(new Date(t.date+'T12:00:00'))}</div></div>
+    </div>
+    <div style="text-align:right"><div class="amount ${typeClass(t)}">${signedAmount(t)}</div>
+    ${withDelete?`<button class="link-btn" style="color:#fca5a5;margin-top:4px" onclick="deleteTransaction(${t.id})">Obriši</button>`:''}</div>
+  </div>`;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function renderRecent(){
+  const el=document.getElementById('recentList');
+  el.innerHTML=state.transactions.slice(0,5).map(t=>itemHTML(t)).join('')||'<div class="empty">Još nema unosa. Dodaj prvi prihod, trošak ili ulaganje.</div>';
+}
+function renderTransactions(){
+  const type=document.getElementById('filterType').value;
+  const month=document.getElementById('filterMonth').value;
+  let rows=[...state.transactions];
+  if(type!=='all')rows=rows.filter(t=>t.type===type);
+  if(month)rows=rows.filter(t=>monthKey(t.date)===month);
+  document.getElementById('transactionList').innerHTML=rows.map(t=>itemHTML(t,true)).join('')||'<div class="empty">Nema stavki za odabrani filter.</div>';
+}
+function deleteTransaction(id){
+  if(state.confirmDelete!==false&&!confirm('Obrisati ovu stavku?'))return;
+  state.transactions=state.transactions.filter(t=>t.id!==id);persist();renderTransactions();renderDashboard();
+}
+const pieColors=['#38bdf8','#22c55e','#f59e0b','#a78bfa','#f472b6','#fb7185','#2dd4bf','#94a3b8'];
+function renderDonut(donutId,legendId,items){
+  const clean=items.filter(x=>x.value>0);
+  const total=clean.reduce((a,b)=>a+b.value,0);
+  const donut=document.getElementById(donutId),legend=document.getElementById(legendId);
+  if(!total){
+    donut.style.background='#1e293b';
+    legend.innerHTML='<div class="empty">Još nema podataka.</div>';
+    return;
+  }
+  let cursor=0;
+  const stops=clean.map((x,i)=>{
+    const start=cursor; cursor+=x.value/total*100;
+    return `${pieColors[i%pieColors.length]} ${start}% ${cursor}%`;
+  });
+  donut.style.background=`conic-gradient(${stops.join(',')})`;
+  legend.innerHTML=clean.map((x,i)=>`<div class="legend-row"><div class="legend-name"><i class="dot" style="background:${pieColors[i%pieColors.length]}"></i><span>${escapeHtml(x.name)}</span></div><strong>${(x.value/total*100).toFixed(0)}%</strong></div>`).join('');
+}
+function groupRows(rows,keyFn){
+  const groups={}; rows.forEach(t=>{const k=keyFn(t);groups[k]=(groups[k]||0)+t.amount});
+  return Object.entries(groups).sort((a,b)=>b[1]-a[1]).map(([name,value])=>({name,value}));
+}
+function renderAnalytics(){
+  const months=[];
+  const now=new Date();
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);
+  }
+  const vals=months.map(m=>{const t=totalsFor(m);return t.income-t.expense-t.investment});
+  const max=Math.max(...vals.map(v=>Math.abs(v)),1);
+  document.getElementById('chart').innerHTML=months.map((m,i)=>{
+    const h=Math.max(4,Math.abs(vals[i])/max*135);
+    return `<div class="bar-wrap"><div class="bar" style="height:${h}px;opacity:${vals[i]<0?.45:1}"></div><div class="bar-label">${m.slice(5)}</div></div>`;
+  }).join('');
+  const m=currentMonth();
+  document.getElementById('analyticsMonth').textContent=monthName(m);
+  const monthRows=state.transactions.filter(t=>monthKey(t.date)===m);
+  const expenses=monthRows.filter(t=>t.type==='expense');
+  const investments=monthRows.filter(t=>t.type==='investment');
+  const expenseTotal=expenses.reduce((a,b)=>a+b.amount,0);
+  const investmentTotal=investments.reduce((a,b)=>a+b.amount,0);
+  const goalPct=state.monthlyGoal?Math.min(100,investmentTotal/state.monthlyGoal*100):0;
+  document.getElementById('goalInsight').textContent=`${goalPct.toFixed(0)}%`;
+  document.getElementById('goalInsightNote').textContent=state.monthlyGoal?`${euro(investmentTotal)} od ${euro(state.monthlyGoal)}`:'Postavi mjesečni cilj';
+  document.getElementById('goalInsightBar').style.width=goalPct+'%';
+  const dayNow=new Date().getDate();
+  const daysInMonth=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();
+  const avgDaily=expenseTotal/Math.max(dayNow,1);
+  const projected=avgDaily*daysInMonth;
+  const plannedAmount=expenses.filter(t=>t.expensePlan==='planned').reduce((a,b)=>a+b.amount,0);
+  const unplannedAmount=expenses.filter(t=>t.expensePlan!=='planned').reduce((a,b)=>a+b.amount,0);
+  const unplannedPct=expenseTotal?unplannedAmount/expenseTotal*100:0;
+  document.getElementById('unplannedInsight').textContent=`${unplannedPct.toFixed(0)}%`;
+  document.getElementById('dailySpendInsight').textContent=euro(avgDaily);
+  document.getElementById('projectionInsight').textContent=euro(projected);
+  renderDonut('mainPie','mainPieLegend',[{name:'Osobni troškovi',value:expenseTotal},{name:'Ulaganja',value:investmentTotal}]);
+  renderDonut('investmentPie','investmentPieLegend',groupRows(investments,t=>t.category));
+  const planned=plannedAmount;
+  const unplanned=unplannedAmount;
+  renderDonut('expensePlanPie','expensePlanLegend',[{name:'Planirani',value:planned},{name:'Neplanirani',value:unplanned}]);
+  const groups={};expenses.forEach(t=>groups[t.category]=(groups[t.category]||0)+t.amount);
+  const sorted=Object.entries(groups).sort((a,b)=>b[1]-a[1]);
+  const total=expenses.reduce((a,b)=>a+b.amount,0)||1;
+  document.getElementById('expenseBreakdown').innerHTML=sorted.map(([k,v])=>`
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:13px"><strong>${k}</strong><span>${euro(v)}</span></div>
+      <div class="progress" style="margin-top:7px;height:7px"><span style="width:${v/total*100}%"></span></div>
+    </div>`).join('')||'<div class="empty">Još nema troškova ovaj mjesec.</div>';
+}
+function renderSettings(){
+  document.getElementById('profileNameInput').value=state.profileName||'';
+  document.getElementById('monthStartInput').value=String(state.monthStart||1);
+  document.getElementById('smartTipsInput').checked=state.smartTips!==false;
+  document.getElementById('confirmDeleteInput').checked=state.confirmDelete!==false;
+  document.getElementById('statementMonth').value=currentMonth();
+  updateProfileUI();
+  document.getElementById('portfolioInput').value=state.portfolio;
+  document.getElementById('monthlyGoalInput').value=state.monthlyGoal;
+  document.getElementById('bigGoalInput').value=state.bigGoal;
+  applyTheme();
+  refreshCustomSelects();
+}
+
+function updateProfileUI(){
+  const name=(state.profileName||'Tvoj profil').trim();
+  document.getElementById('profileNameDisplay').textContent=name;
+  document.getElementById('profileAvatar').textContent=(name==='Tvoj profil'?'A':name[0]).toUpperCase();
+}
+function saveProfile(){
+  state.profileName=document.getElementById('profileNameInput').value.trim();
+  state.monthStart=parseInt(document.getElementById('monthStartInput').value)||1;
+  state.smartTips=document.getElementById('smartTipsInput').checked;
+  state.confirmDelete=document.getElementById('confirmDeleteInput').checked;
+  persist();updateProfileUI();showToast('Profil spremljen');
+}
+function exportStatementCSV(){
+  const month=document.getElementById('statementMonth').value||currentMonth();
+  const rows=state.transactions.filter(t=>monthKey(t.date)===month);
+  const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const header=['Datum','Vrsta','Kategorija','Plan','Opis','Iznos EUR'];
+  const labels={income:'Prihod',expense:'Trošak',investment:'Ulaganje'};
+  const csv=[header.map(esc).join(';'),...rows.map(t=>[t.date,labels[t.type],t.category,t.expensePlan==='planned'?'Planirani':t.expensePlan==='unplanned'?'Neplanirani':'',t.note,t.amount.toFixed(2)].map(esc).join(';'))].join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`za-opanak-izvadak-${month}.csv`;a.click();URL.revokeObjectURL(a.href);showToast('Izvadak je pripremljen');
+}
+async function shareApp(){
+  const data={title:'za.opanak',text:'Jednostavno praćenje troškova, prihoda i ulaganja.',url:location.href};
+  try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(location.href);showToast('Poveznica kopirana')}}catch(e){}
+}
+let onboardingIndex=0;
+function renderOnboarding(){
+  const slides=[...document.querySelectorAll('.slide')];slides.forEach((s,i)=>s.classList.toggle('active',i===onboardingIndex));
+  const dots=document.getElementById('slideDots');dots.innerHTML=slides.map((_,i)=>`<i class="${i===onboardingIndex?'active':''}"></i>`).join('');
+  document.getElementById('nextSlideBtn').textContent=onboardingIndex===slides.length-1?'Započni':'Dalje';
+}
+function nextSlide(){const total=document.querySelectorAll('.slide').length;if(onboardingIndex<total-1){onboardingIndex++;renderOnboarding()}else finishOnboarding()}
+function finishOnboarding(){state.onboardingDone=true;persist();document.getElementById('onboarding').classList.add('hidden');document.getElementById('onboarding').setAttribute('aria-hidden','true')}
+function initOnboarding(){if(!state.onboardingDone){const o=document.getElementById('onboarding');o.classList.remove('hidden');o.setAttribute('aria-hidden','false');renderOnboarding()}}
+
+function saveSettings(){
+  state.portfolio=parseFloat(document.getElementById('portfolioInput').value)||0;
+  state.monthlyGoal=parseFloat(document.getElementById('monthlyGoalInput').value)||0;
+  state.bigGoal=parseFloat(document.getElementById('bigGoalInput').value)||1000000;
+  persist();showToast('Ciljevi spremljeni');renderDashboard();
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`financije-backup-${todayISO()}.json`;a.click();URL.revokeObjectURL(a.href);
+}
+function importData(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{state={...defaultState(),...JSON.parse(r.result)};persist();renderDashboard();showToast('Podaci uvezeni')}catch(e){showToast('Neispravna datoteka')}};
+  r.readAsText(f);
+}
+function resetData(){
+  if(!confirm('Ovo briše sve unose na ovom uređaju. Nastaviti?'))return;
+  state=defaultState();persist();renderDashboard();showToast('Podaci obrisani');
+}
+document.getElementById('date').value=todayISO();
+document.getElementById('filterMonth').value=currentMonth();
+applyTheme();refreshCustomSelects();setCategories();renderDashboard();updateProfileUI();initOnboarding();
+
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
